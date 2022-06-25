@@ -98,14 +98,20 @@ class App extends Component {
         <RowComponent key={idx} word={wordObj.word} correctness={wordObj.correctness}/>
     ))
     return (
-        <div className="App">
-          {board}
-          <Keyboard
-              onKeyPress={this.onKeyPress}
-              layout={keyboardLayout}
-              display={keyboardDisplay}
-          />
+        <div>
+          <div className="board">
+            {board}
+
+          </div>
+          <div className="keyboard">
+            <Keyboard
+                onKeyPress={this.onKeyPress}
+                layout={keyboardLayout}
+                display={keyboardDisplay}
+            />
+          </div>
         </div>
+
 
     );
   }
