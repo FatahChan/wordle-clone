@@ -153,11 +153,9 @@ class App extends Component {
             {board}
 
           </div>
-          <div className="keyboard">
             <form onSubmit={this.onSubmit}>
               <input id="input" autoFocus={true}  onBlur={this.keepFocus} onChange={this.onChange} maxLength={5}/>
             </form>
-          </div>
         </div>
 
 
