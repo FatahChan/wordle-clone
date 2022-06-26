@@ -27,18 +27,57 @@ class App extends Component {
       input: ""
 
     }
-    this.handleInput = this.handleInput.bind(this);
+    // this.handleInput = this.handleInput.bind(this);
     this.handleKey = this.handleKey.bind(this);
     this.onKeyPress = this.onKeyPress.bind(this);
     this.keepFocus = this.keepFocus.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
-  onChange(e){
-    this.setState({
-      input: e.target.value
-    })
-    console.log(this.state.input);
+  onChange(e) {
+
+    let currGuesses = this.state.guesses;
+    if (this.state.numberOfGuess <= 5 && currGuesses[this.state.numberOfGuess].word.length <= 5) {
+      console.log(e.target.value.match(/^[a-zA-Z]{0,5}$/) !== null)
+      if (e.target.value.match(/^[a-zA-Z]{0,5}$/)) {
+        currGuesses[this.state.numberOfGuess].word = e.target.value;
+        this.setState({
+          guesses: currGuesses
+        })
+      } else {
+        e.target.value = currGuesses[this.state.numberOfGuess].word;
+      }
+    }
+  }
+  onSubmit(e) {
+      e.preventDefault();
+      if(!this.state.isGameOver && this.state.guesses[this.state.numberOfGuess].word.length === 5){
+        let correctness = [];
+        for(let i = 0; i < 5; i++){
+          if(this.state.guesses[this.state.numberOfGuess].word[i].toLowerCase() === this.state.answer[i]){
+            correctness.push(3);
+          }else if (this.state.answer.includes(this.state.guesses[this.state.numberOfGuess].word[i].toLowerCase())){
+            correctness.push(2);
+          }else{
+            correctness.push(1);
+          }
+        }
+        let currGuesses = this.state.guesses;
+        currGuesses[this.state.numberOfGuess].correctness = correctness;
+        const isOver = (JSON.stringify(correctness)===JSON.stringify([3, 3, 3, 3, 3])) || (this.state.numberOfGuess === 5);
+        if(isOver){
+          window.removeEventListener("keydown", this.handleKey)
+        }
+        console.log(this.state.numberOfGuess)
+        console.log(this.state.isGameOver)
+        document.getElementById('input').value = '';
+        this.setState({
+          guesses: currGuesses,
+          isGameOver: isOver,
+          numberOfGuess: this.state.numberOfGuess + 1
+        })
+      }
   }
   onKeyPress = (button) => {
     console.log(button)
@@ -56,47 +95,47 @@ class App extends Component {
     this.handleInput(input);
   }
   handleKey(e){
-    this.handleInput(e.key.toLowerCase());
+    // this.handleInput(e.key.toLowerCase());
   }
-  handleInput(key){
-    if(!this.state.isGameOver && key === 'backspace'){
-      let currGuesses = this.state.guesses;
-      currGuesses[this.state.numberOfGuess].word = currGuesses[this.state.numberOfGuess].word.slice(0, -1);
-      this.setState({
-        guesses: currGuesses
-      })
-    }
-    else if(!this.state.isGameOver && key === 'enter' && this.state.guesses[this.state.numberOfGuess].word.length === 5){
-      let correctness = [];
-      for(let i = 0; i < 5; i++){
-        if(this.state.guesses[this.state.numberOfGuess].word[i].toLowerCase() === this.state.answer[i]){
-          correctness.push(3);
-        }else if (this.state.answer.includes(this.state.guesses[this.state.numberOfGuess].word[i].toLowerCase())){
-          correctness.push(2);
-        }else{
-          correctness.push(1);
-        }
-      }
-      let currGuesses = this.state.guesses;
-      currGuesses[this.state.numberOfGuess].correctness = correctness;
-      const isOver = (JSON.stringify(correctness)===JSON.stringify([3, 3, 3, 3, 3])) || (this.state.numberOfGuess === 5);
-      if(isOver){
-        window.removeEventListener("keydown", this.handleKey)
-      }
-      this.setState({
-        guesses: currGuesses,
-        isGameOver: isOver,
-        numberOfGuess: this.state.numberOfGuess + 1
-      })
-    }
-    else if(!this.state.isGameOver && key.match(/^[A-Za-z]$/) !== null && this.state.guesses[this.state.numberOfGuess].word.length < 5) {
-      let currGuesses = this.state.guesses;
-      currGuesses[this.state.numberOfGuess].word = currGuesses[this.state.numberOfGuess].word + key;
-      this.setState({
-        guesses: currGuesses
-      })
-    }
-  }
+  // handleInput(key){
+  //   if(!this.state.isGameOver && key === 'backspace'){
+  //     let currGuesses = this.state.guesses;
+  //     currGuesses[this.state.numberOfGuess].word = currGuesses[this.state.numberOfGuess].word.slice(0, -1);
+  //     this.setState({
+  //       guesses: currGuesses
+  //     })
+  //   }
+  //   else if(!this.state.isGameOver && key === 'enter' && this.state.guesses[this.state.numberOfGuess].word.length === 5){
+  //     let correctness = [];
+  //     for(let i = 0; i < 5; i++){
+  //       if(this.state.guesses[this.state.numberOfGuess].word[i].toLowerCase() === this.state.answer[i]){
+  //         correctness.push(3);
+  //       }else if (this.state.answer.includes(this.state.guesses[this.state.numberOfGuess].word[i].toLowerCase())){
+  //         correctness.push(2);
+  //       }else{
+  //         correctness.push(1);
+  //       }
+  //     }
+  //     let currGuesses = this.state.guesses;
+  //     currGuesses[this.state.numberOfGuess].correctness = correctness;
+  //     const isOver = (JSON.stringify(correctness)===JSON.stringify([3, 3, 3, 3, 3])) || (this.state.numberOfGuess === 5);
+  //     if(isOver){
+  //       window.removeEventListener("keydown", this.handleKey)
+  //     }
+  //     this.setState({
+  //       guesses: currGuesses,
+  //       isGameOver: isOver,
+  //       numberOfGuess: this.state.numberOfGuess + 1
+  //     })
+  //   }
+  //   else if(!this.state.isGameOver && key.match(/^[A-Za-z]$/) !== null && this.state.guesses[this.state.numberOfGuess].word.length < 5) {
+  //     let currGuesses = this.state.guesses;
+  //     currGuesses[this.state.numberOfGuess].word = currGuesses[this.state.numberOfGuess].word + key;
+  //     this.setState({
+  //       guesses: currGuesses
+  //     })
+  //   }
+  // }
   keepFocus(){
     document.getElementById("input").focus();
   }
@@ -115,7 +154,9 @@ class App extends Component {
 
           </div>
           <div className="keyboard">
-            <input id="input" autoFocus={true} onBlur={this.keepFocus} onChange={this.onChange} value={this.state.input} maxLength={5}/>
+            <form onSubmit={this.onSubmit}>
+              <input id="input" autoFocus={true}  onBlur={this.keepFocus} onChange={this.onChange} maxLength={5}/>
+            </form>
           </div>
         </div>
 

@@ -39,7 +39,7 @@
 
 input{
   display: block;
-  opacity: 0.01;
+  opacity: 0.5;
 }
 
 @media only screen and (max-width: 820px) {
