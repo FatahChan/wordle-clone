@@ -24,13 +24,22 @@ class App extends Component {
       isGameOver: false,
       answer: getWords[Math.floor(Math.random()*getWords.length)],
       guesses: Array(6).fill(null).map(() => Object.create({word: '', correctness: Array(5).fill(0)})),
+      input: ""
+
     }
     this.handleInput = this.handleInput.bind(this);
     this.handleKey = this.handleKey.bind(this);
     this.onKeyPress = this.onKeyPress.bind(this);
+    this.keepFocus = this.keepFocus.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
-
+  onChange(e){
+    this.setState({
+      input: e.target.value
+    })
+    console.log(this.state.input);
+  }
   onKeyPress = (button) => {
     console.log(button)
     let input;
@@ -88,7 +97,9 @@ class App extends Component {
       })
     }
   }
-
+  keepFocus(){
+    document.getElementById("input").focus();
+  }
   componentDidMount() {
     console.log(this.state.answer)
     window.addEventListener("keydown", this.handleKey)
@@ -104,11 +115,7 @@ class App extends Component {
 
           </div>
           <div className="keyboard">
-            <Keyboard
-                onKeyPress={this.onKeyPress}
-                layout={keyboardLayout}
-                display={keyboardDisplay}
-            />
+            <input id="input" autoFocus={true} onBlur={this.keepFocus} onChange={this.onChange} value={this.state.input} maxLength={5}/>
           </div>
         </div>
 
