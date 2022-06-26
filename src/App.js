@@ -53,6 +53,10 @@ class App extends Component {
   onSubmit(e) {
       e.preventDefault();
       if(!this.state.isGameOver && this.state.guesses[this.state.numberOfGuess].word.length === 5){
+        if(!getWords.includes(this.state.guesses[this.state.numberOfGuess].word)){
+          alert("Word is not in list\nPress enter to continue ")
+          return;
+        }
         let correctness = [];
         for(let i = 0; i < 5; i++){
           if(this.state.guesses[this.state.numberOfGuess].word[i].toLowerCase() === this.state.answer[i]){
