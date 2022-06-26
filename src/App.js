@@ -39,7 +39,7 @@ class App extends Component {
   }
   onSubmit(e) {
       e.preventDefault();
-      if(!this.state.isGameOver && this.state.guesses[this.state.numberOfGuess].word.length === 5){
+      if(!(this.state.numberOfGuess === 6) && this.state.guesses[this.state.numberOfGuess].word.length === 5){
         if(!getWords.includes(this.state.guesses[this.state.numberOfGuess].word.toLowerCase())){
           this.setState({shake: true});
           setTimeout(() => this.setState({shake: false}), 800);
@@ -57,9 +57,7 @@ class App extends Component {
         }
         let currGuesses = this.state.guesses;
         currGuesses[this.state.numberOfGuess].correctness = correctness;
-        const isOver = (JSON.stringify(correctness)===JSON.stringify([3, 3, 3, 3, 3])) || (this.state.numberOfGuess === 5);
-        console.log(this.state.numberOfGuess)
-        console.log(this.state.isGameOver)
+        const isOver = (JSON.stringify(correctness)===JSON.stringify([3, 3, 3, 3, 3])) || (this.state.numberOfGuess === 6);
         document.getElementById('input').value = '';
         this.setState({
           guesses: currGuesses,
@@ -133,22 +131,33 @@ class App extends Component {
     this.keepFocus();
     // window.addEventListener("keydown", this.handleKey)
   }
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if(this.state.numberOfGuess === 6){
+      document.getElementById("myModal").style.display = "block";
+    }
+  }
+
   render() {
     const board = this.state.guesses.map((wordObj, idx) => (
         <RowComponent shake={!!(this.state.shake && idx === this.state.numberOfGuess)} key={idx} word={wordObj.word} correctness={wordObj.correctness}/>
     ))
     return (
         <div>
+          {
+            <div id="myModal" className="modal">
+              <div className="modal-content">
+                <p>Answer is {this.state.answer.toUpperCase()}</p>
+              </div>
+            </div>
+          }
           <div className="board">
             {board}
 
           </div>
-            <form onSubmit={this.onSubmit}>
-              <input id="input" autoFocus={true}  onBlur={this.keepFocus} onChange={this.onChange} maxLength={5}/>
-            </form>
+          <form onSubmit={this.onSubmit}>
+            <input id="input" autoFocus={true}  onBlur={this.keepFocus} onChange={this.onChange} maxLength={5}/>
+          </form>
         </div>
-
-
     );
   }
 }
