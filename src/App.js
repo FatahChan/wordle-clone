@@ -141,6 +141,7 @@ class App extends Component {
   }
   componentDidMount() {
     console.log(this.state.answer)
+    this.keepFocus();
     window.addEventListener("keydown", this.handleKey)
   }
   render() {
