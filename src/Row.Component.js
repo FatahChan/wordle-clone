@@ -25,7 +25,7 @@ class RowComponent extends Component {
       }
 
       tiles.push(
-          <div key={i} className={`tile ${correctness}`}>
+          <div key={i} className={`tile ${correctness} ${this.props.shake? "shake": ""}`}>
             {this.props.word[i]? this.props.word[i].toUpperCase(): ''}
           </div>)
     }

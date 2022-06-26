@@ -2,20 +2,6 @@ import './App.css';
 import {getWords} from "./words";
 import React, {Component} from 'react';
 import RowComponent from "./Row.Component";
-import Keyboard from 'react-simple-keyboard';
-import 'react-simple-keyboard/build/css/index.css';
-
-const keyboardLayout = {
-  'default': [
-    'q w e r t y u i o p {bksp}',
-    'a s d f g h j k l {enter}',
-    'z x c v b n m',
-  ]
-}
-const keyboardDisplay = {
-  '{bksp}': '🔙',
-  '{enter}': '✔',
-}
 class App extends Component {
   constructor(props) {
     super(props);
@@ -24,12 +10,13 @@ class App extends Component {
       isGameOver: false,
       answer: getWords[Math.floor(Math.random()*getWords.length)],
       guesses: Array(6).fill(null).map(() => Object.create({word: '', correctness: Array(5).fill(0)})),
-      input: ""
+      input: "",
+      shake: false
 
     }
     // this.handleInput = this.handleInput.bind(this);
-    this.handleKey = this.handleKey.bind(this);
-    this.onKeyPress = this.onKeyPress.bind(this);
+    // this.handleKey = this.handleKey.bind(this);
+    // this.onKeyPress = this.onKeyPress.bind(this);
     this.keepFocus = this.keepFocus.bind(this);
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -38,7 +25,7 @@ class App extends Component {
   onChange(e) {
 
     let currGuesses = this.state.guesses;
-    if (this.state.numberOfGuess <= 5 && currGuesses[this.state.numberOfGuess].word.length <= 5) {
+    if (this.state.numberOfGuess <= 5 && !this.state.isGameOver && currGuesses[this.state.numberOfGuess].word.length <= 5) {
       console.log(e.target.value.match(/^[a-zA-Z]{0,5}$/) !== null)
       if (e.target.value.match(/^[a-zA-Z]{0,5}$/)) {
         currGuesses[this.state.numberOfGuess].word = e.target.value;
@@ -46,15 +33,16 @@ class App extends Component {
           guesses: currGuesses
         })
       } else {
-        e.target.value = currGuesses[this.state.numberOfGuess].word;
+        e.target.value = currGuesses[this.state.numberOfGuess].word.toLowerCase();
       }
     }
   }
   onSubmit(e) {
       e.preventDefault();
       if(!this.state.isGameOver && this.state.guesses[this.state.numberOfGuess].word.length === 5){
-        if(!getWords.includes(this.state.guesses[this.state.numberOfGuess].word)){
-          alert("Word is not in list\nPress enter to continue ")
+        if(!getWords.includes(this.state.guesses[this.state.numberOfGuess].word.toLowerCase())){
+          this.setState({shake: true});
+          setTimeout(() => this.setState({shake: false}), 800);
           return;
         }
         let correctness = [];
@@ -70,9 +58,6 @@ class App extends Component {
         let currGuesses = this.state.guesses;
         currGuesses[this.state.numberOfGuess].correctness = correctness;
         const isOver = (JSON.stringify(correctness)===JSON.stringify([3, 3, 3, 3, 3])) || (this.state.numberOfGuess === 5);
-        if(isOver){
-          window.removeEventListener("keydown", this.handleKey)
-        }
         console.log(this.state.numberOfGuess)
         console.log(this.state.isGameOver)
         document.getElementById('input').value = '';
@@ -83,24 +68,24 @@ class App extends Component {
         })
       }
   }
-  onKeyPress = (button) => {
-    console.log(button)
-    let input;
-    switch (button){
-      case '{enter}':
-        input = 'enter'
-      break;
-      case '{bksp}':
-        input = 'backspace'
-      break;
-      default:
-        input = button
-    }
-    this.handleInput(input);
-  }
-  handleKey(e){
-    // this.handleInput(e.key.toLowerCase());
-  }
+  // onKeyPress = (button) => {
+  //   console.log(button)
+  //   let input;
+  //   switch (button){
+  //     case '{enter}':
+  //       input = 'enter'
+  //     break;
+  //     case '{bksp}':
+  //       input = 'backspace'
+  //     break;
+  //     default:
+  //       input = button
+  //   }
+  //   this.handleInput(input);
+  // }
+  // handleKey(e){
+  //   this.handleInput(e.key.toLowerCase());
+  // }
   // handleInput(key){
   //   if(!this.state.isGameOver && key === 'backspace'){
   //     let currGuesses = this.state.guesses;
@@ -146,11 +131,11 @@ class App extends Component {
   componentDidMount() {
     console.log(this.state.answer)
     this.keepFocus();
-    window.addEventListener("keydown", this.handleKey)
+    // window.addEventListener("keydown", this.handleKey)
   }
   render() {
     const board = this.state.guesses.map((wordObj, idx) => (
-        <RowComponent key={idx} word={wordObj.word} correctness={wordObj.correctness}/>
+        <RowComponent shake={!!(this.state.shake && idx === this.state.numberOfGuess)} key={idx} word={wordObj.word} correctness={wordObj.correctness}/>
     ))
     return (
         <div>
