@@ -2,13 +2,15 @@ import './App.css';
 import {getWords} from "./words";
 import React, {Component} from 'react';
 import RowComponent from "./Row.Component";
+import {cyrb53} from "./cyrb53Hash";
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       numberOfGuess: 0,
       isGameOver: false,
-      answer: getWords[Math.floor(Math.random()*getWords.length)],
+      answer: getWords[cyrb53(new Date().toISOString().slice(0, 10))%getWords.length],
       guesses: Array(6).fill(null).map(() => Object.create({word: '', correctness: Array(5).fill(0)})),
       input: "",
       shake: false
